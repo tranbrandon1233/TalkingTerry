@@ -3,26 +3,35 @@
 
 ## Inspiration
 #### insert interesting phrase here 
-body text
+say smth that sounds better than "we got the rabbit wtv thing and were inspired by it n wanted to build our own"
 
 ## What it does
 #### Talking Terry is the hands-free phone that can do everything for you with just your voice. 
-body text
+features include:
+- (list all the stuff the voice commands can do)
 
 ## How we built it
-#### Software
-body text
-#### Hardware
-body text
+### Software
+- list apis n algorithm concepts
+### Hardware
+- something something raspberry pi running python, hooked up to mic, speaker+amplifier, and gps
 
 ## Challenges we faced
-- hardware
+### Hardware
+- integrating mic and gps modules so rp can receive outputs
+- had to solder some headers bc they didn't come soldered, no one has solder at a hackathon 
+- obtaining all the hardware parts :P
+### Software
+- 
 
 ## Accomplishments that we're proud of
-- hardware
+- getting the hardware to work (hopefully)
 
 ## What we learned
-- it's really hard to fall asleep on a leather couch
+- how to rpi :D
+- la traffic is a nightmare
+- cabbage is spicy?
+- it's actually kinda hard to fall asleep on a leather couch
 
 ## What's next for Xplore
 - rideshares, food deliveries, (anything listed in the doc we don't end up implementing)
