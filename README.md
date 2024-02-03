@@ -1,4 +1,4 @@
-#Talking Terry
+# Talking Terry
 
 2024 QWERHacks project
 
