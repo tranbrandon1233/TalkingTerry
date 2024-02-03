@@ -12,8 +12,8 @@ class Controller:
         self.executor = AgentExecutor(agent, tools)
         self.history = []
         
-    def update_status(self, status):
-        """Not implemented yet, should do a quick status update to the user"""
+    def text_to_speech(self, status):
+        """Not implemented yet, will convert text to speech and play it to the user"""
         pass
     
     def invoke(self, message):
