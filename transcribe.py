@@ -67,7 +67,7 @@ def generate(messages):
     for chunk in client.chat.completions.create(model="gpt-4-turbo-preview",
                                               messages=messages,
                                               stream=True):
-        if text_chunk := chunk['choices'][0]['message']['content']
+        if text_chunk := chunk.choices[0].delta.content:
             yield text_chunk
 
 def is_installed(lib_name):
@@ -141,6 +141,36 @@ def generate_stream_input(text_generator, voice, model):
 def on_streaming_complete():
     history.append({"role": "assistant", "content": answer})
 
+def stream_output(audio_stream):
+    if not is_installed("mpv"):
+        message = (
+            "mpv not found, necessary to stream audio. "
+            "On mac you can install it with 'brew install mpv'. "
+            "On linux and windows you can install it from https://mpv.io/")
+        raise ValueError(message)
+
+    mpv_command = ["mpv", "--no-cache", "--no-terminal", "--", "fd://0"]
+    mpv_process = subprocess.Popen(
+        mpv_command,
+        stdin=subprocess.PIPE,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
+
+    audio = b""
+
+    for chunk in audio_stream:
+        if chunk is not None:
+            mpv_process.stdin.write(chunk)  # type: ignore
+            mpv_process.stdin.flush()  # type: ignore
+            audio += chunk
+
+    if mpv_process.stdin:
+        mpv_process.stdin.close()
+    mpv_process.wait()
+
+    return audio
+
 while True:
     audio = pyaudio.PyAudio()
     stream = audio.open(
@@ -191,4 +221,13 @@ while True:
                     response_format="text"
                 )
     os.remove(temp_audio_file.name)
-    print(transcript)
+    print(f"Transcribed:{transcript}\n<<< ", end="", flush=True)
+    history.append({"role": "user", "content": transcript})
+    
+    model = {
+        "model_id": "eleven_monolingual_v1",
+    }
+    
+    text_generator = generate([system_prompt] + history[-10:])
+    stream_output(generate_stream_input(text_generator, voice, model))
+    on_streaming_complete()
