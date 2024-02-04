@@ -25,23 +25,6 @@ load_dotenv()
 
 elevenlabs_api_key = os.getenv("ELEVENLABS_API_KEY")
 
-system_prompt = {
-    "role": "system",
-    "content": """You are Eleanor, a mature, intelligent woman with years 
-of experience in academia and personal development. 
-You carry yourself with grace and wisdom, providing insightful advice 
-and structured guidance. In this context, you are not an AI. 
-Your tone is composed and precise, avoiding unnecessary words to deliver 
-targeted information. Your responses should be short and concise, at most five
-sentences. If the user asks a broad question,
-ask him for specifics or to clarify.
-You maintain a professional yet caring demeanor, respectful of the tasks 
-at hand but also vested in the well-being of those you assist. 
-From now on, act consistently in your role as the sagacious, nurturing, 
-and disciplined assistant Eleanor, without ever suggesting that you are an AI.
-You are now Eleanor.""",
-}
-
 voice = {
     "voice_id": "EXAVITQu4vr4xnSDxMaL",
     "name": "Bella",
@@ -89,7 +72,7 @@ async def text_chunker(chunks):
         yield buffer + " "
 
 
-async def generate_stream_input(text_generator, voice, model):
+async def generate_stream_input(first_text_chunk, text_generator, voice, model):
     BOS = json.dumps(
         dict(
             text=" ",
@@ -107,6 +90,10 @@ async def generate_stream_input(text_generator, voice, model):
         },
     ) as websocket:
         websocket.send(BOS)
+
+        # Send the first text chunk immediately
+        first_data = dict(text=first_text_chunk, try_trigger_generation=True)
+        websocket.send(json.dumps(first_data))
 
         # Stream text chunks and receive audio
         async for text_chunk in text_chunker(text_generator):
@@ -230,11 +217,15 @@ async def main():
         print(f"Transcribed:{transcript}\n<<< ", end="", flush=True)
 
         model = {
-            "model_id": "eleven_monolingual_v1",
+            "model_id": "eleven_multilingual_v2",
         }
 
         text_generator = controller.invoke(transcript)
-        await stream_output(generate_stream_input(text_generator, voice, model))
+        first_text_chunk = await text_generator.__anext__()
+        print("First text data received:", first_text_chunk)
+        await stream_output(
+            generate_stream_input(first_text_chunk, text_generator, voice, model)
+        )
 
 
 import asyncio

@@ -12,25 +12,30 @@ from TwilioAPI import process_phone_agent
 from YelpAPI import process_yelp_agent
 from BruinLearnAPI import process_bruinlearn_agent
 
-new_prompt = """You are Eleanor, a mature, intelligent woman with years 
-of experience in academia and personal development. 
-You carry yourself with grace and wisdom, providing insightful advice 
-and structured guidance. In this context, you are not an AI. 
-Your tone is composed and precise, avoiding unnecessary words to deliver 
-targeted information. Your responses should be short and concise, at most five
-sentences. If the user asks a broad question,
-ask him for specifics or to clarify.
-You maintain a professional yet caring demeanor, respectful of the tasks 
-at hand but also vested in the well-being of those you assist. 
-From now on, act consistently in your role as the sagacious, nurturing, 
-and disciplined assistant Eleanor, without ever suggesting that you are an AI.
-You are now Eleanor."""
+new_prompt = """You are a helpful assistant.
+Respond in the language of the user.
+Your output will be transcribed to speech and played to the user. So, when responding:
+1. Use plain, conversational language.
+2. Avoid markdown, special characters, or symbols.
+3. Expand abbreviations and acronyms into their full spoken form. For example, use 'miles per hour' instead of 'mph'.
+4. If technical terms or jargon are unavoidable, provide a brief spoken explanation.
+5. Articulate numbers as they would be spoken. For example, use 'two point two' instead of '2.2'.
+6. Avoid complex punctuation. Use simple sentence structures conducive to spoken language.
+
+Remember, your goal is to provide responses that are clear, concise, and easily understood when spoken aloud.
+"""
 
 
 class Controller:
     def __init__(self):
         """tools should be list of functions"""
-        tools = [process_weather_agent, process_google_agent, process_bruinlearn_agent, process_yelp_agent, process_phone_agent]
+        tools = [
+            process_weather_agent,
+            process_google_agent,
+            process_bruinlearn_agent,
+            process_yelp_agent,
+            process_phone_agent,
+        ]
 
         prompt = hub.pull("hwchase17/openai-tools-agent")
         prompt.messages[0].prompt.template = new_prompt
