@@ -21,7 +21,7 @@ def find_businesses(location:str, radius:int, category:str) -> str:
 
     Args:
         location (str): The location of the user.
-        radius(float): The radius from the user in miles.
+        radius(int): The radius from the user in miles.
         category(str): The category of the location the user wants to go to.
         
     Returns: A string of up to five businesses that are open in the location within the specified raidus in miles that the user wants to go to.
@@ -52,9 +52,9 @@ def find_events(location:str, radius: int) -> str:
 
     Args:
         location (str): The location of the user.
-        radius (float): The radius of the business from the user in miles.
+        radius (int): The radius of the business from the user in miles.
     
-    Returns: A list of up to five events that are open in the location within the raidus in miles that the user wants to go to.
+    Returns: A string containing up to five events that are open in the location within the raidus in miles that the user wants to go to.
     """
     results = {}
     allEvents =[]

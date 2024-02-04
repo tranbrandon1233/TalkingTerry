@@ -39,6 +39,33 @@ def get_enrolled_courses() -> str:
 
     return str(listCourses)[1:-1]
 
+def get_announcements(course_id: int) -> str:
+    """
+    Queries the Canvas API for announcements of a specific course for the student based from bruin learn.
+
+    Args:
+        course_id (int): The id of the course.
+
+    Returns: A list of announcements of the specific course
+    """
+    url_params = {
+        'context_codes': 'course_'+str(course_id)
+    }
+    url_params = url_params or {}
+    url = '{0}{1}'.format(API_HOST, quote(SEARCH_PATH.encode('utf8')))
+    headers = {
+        'Authorization': 'Bearer %s' % CANVAS_API_TOKEN,
+    }
+    #print(u'Querying {0} ...'.format(url))
+
+    response = requests.request('GET', url, headers=headers, params=url_params)
+    
+    listAnnouncements = []
+    for announcement in response.json():
+        listAnnouncements.append(announcement['title'])
+
+    return str(listAnnouncements)[1:-1]
+
 # Define a list of tools
 tools = [
     get_enrolled_courses
