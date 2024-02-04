@@ -14,7 +14,6 @@ import os
 from openai import OpenAI
 import websockets
 from websockets.sync.client import connect
-import asyncio
 import json
 
 # mpv
@@ -125,6 +124,7 @@ def generate_stream_input(text_generator, voice, model):
                 data = json.loads(websocket.recv(1e-4))
                 if data["audio"]:
                     yield base64.b64decode(data["audio"])  # type: ignore
+                    print(data['audio'])
             except TimeoutError:
                 pass
 
@@ -204,6 +204,7 @@ while True:
 
         if voice_activity_detected:
             frames.append(data)
+    
             if current_noise_level < ambient_noise_level + 100:
                 break  # voice activity ends
             
@@ -221,7 +222,7 @@ while True:
                     response_format="text"
                 )
     os.remove(temp_audio_file.name)
-    print(f"Transcribed:{transcript}\n<<< ", end="", flush=True)
+    print(f"Transcribed: {transcript}\n<<< ", end="", flush=True)
     history.append({"role": "user", "content": transcript})
     
     model = {
