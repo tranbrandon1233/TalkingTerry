@@ -1,8 +1,8 @@
 from __future__ import print_function
 import os
-import BaseAgent
 from dotenv import load_dotenv
 import requests
+from Agent import Agent
 
 from langchain.tools import tool
 
@@ -21,7 +21,6 @@ def get_enrolled_courses() -> list:
 
     Returns: A list of classes that the user is enrolled in at UCLA
     """
-    results = []
     url_params = {
         'enrollment_state': 'active'
     }
@@ -41,4 +40,27 @@ def get_enrolled_courses() -> list:
     return listCourses
 
 
+# Define a list of tools
+tools = [
+    get_enrolled_courses
+]
+
+@tool
+def process_bruinlearn_agent(input: str) -> str:
+    """Asks the weather agent to process the input and return the output. The agent is able to find the current weather condition, temperature, humidity, precipitation, and wind speed of the city the user is in.
+    
+    Arg:
+        input (str): The city of the user.
+    
+    Returns: A string of the current weather condition, temperature, humidity, precipitation, and wind speed of the city the user is in.
+    """
+    # Define a list of tools
+    tools = [
+        get_enrolled_courses
+    ]
+    agent = Agent(tools)
+    output = agent.invoke(input)
+    return output
+
+# print(process_weather_agent('What is the humidity in New York?')) 
 
