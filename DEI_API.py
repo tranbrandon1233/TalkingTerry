@@ -69,4 +69,4 @@ def process_DEI_agent(input: str) -> str:
     output = agent.invoke(input)
     return output
 
-print(process_DEI_agent('Can you recommend ten books on Diversity, Equity, and Inclusion involving the LGBTQ community?')) 
+#print(process_DEI_agent('Can you recommend ten books on Diversity, Equity, and Inclusion involving the LGBTQ community?')) 
