@@ -83,9 +83,11 @@ def find_wind_speed(city:str) -> float:
         """        
         return get_info(city)['current']['wind_mph']
     
+'''
 print(find_weather_condition("New York"))
 print(find_temp("New York"))
 print(find_humidity("New York"))
 print(find_precip("New York"))
 print(find_wind_speed("New York"))
 
+'''

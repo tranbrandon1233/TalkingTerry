@@ -11,17 +11,21 @@ import wave
 import collections
 import dotenv
 import os
-from openai import OpenAI
 import websockets
 from websockets.sync.client import connect
 import asyncio
 import json
 
+from langchain.agents import tools
+
 # mpv
 import shutil
 import subprocess
 
+
+
 load_dotenv()
+
 
 elevenlabs_api_key = os.getenv("ELEVENLABS_API_KEY")
 
@@ -43,6 +47,29 @@ From now on, act consistently in your role as the sagacious, nurturing,
 and disciplined assistant Eleanor, without ever suggesting that you are an AI.
 You are now Eleanor.""",
 }
+'''
+tools = [
+    {
+        "type": "function",
+        "function": {
+            "name": "get_agent",
+            "description": "Call this function with the parameter 'weather' if the user asks for the weather, with the parameter 'yelp' if the user asks about a nearby business, or with the parameter 'BruinLearn' if the user asks about classes.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "type": {
+                        "type": "string",
+                        "enum": ["weather", "yelp", "BruinLearn"],
+                        "description": "The agent needed to handle a specific task. For example, 'weather' for any information about the weather, 'yelp' for any information about a nearby business, or 'BruinLearn' for any information about classes.",
+                    },
+                },
+                "required": ["type"],
+            },
+        }
+    },
+]
+'''
+
 
 voice = {
     "voice_id": "EXAVITQu4vr4xnSDxMaL",
@@ -61,11 +88,12 @@ history = []
 client = OpenAI()
 answer = ""
 
+
 def generate(messages):
     global answer
     answer = ""
     for chunk in client.chat.completions.create(model="gpt-4-turbo-preview",
-                                              messages=messages,
+                                              messages=messages, tools=tools, tool_choice={"type": "function", "function": {"name": "get_agent"}},
                                               stream=True):
         if text_chunk := chunk.choices[0].delta.content:
             yield text_chunk
@@ -138,7 +166,6 @@ def generate_stream_input(text_generator, voice, model):
             except websockets.exceptions.ConnectionClosed:
                 break
 
-def on_streaming_complete():
     history.append({"role": "assistant", "content": answer})
 
 def stream_output(audio_stream):
