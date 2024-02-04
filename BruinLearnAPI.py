@@ -29,7 +29,7 @@ def get_enrolled_courses() -> str:
     headers = {
         'Authorization': 'Bearer %s' % CANVAS_API_TOKEN,
     }
-    print(u'Querying {0} ...'.format(url))
+    #print(u'Querying {0} ...'.format(url))
 
     response = requests.request('GET', url, headers=headers, params=url_params)
     
@@ -39,7 +39,6 @@ def get_enrolled_courses() -> str:
 
     return str(listCourses)[1:-1]
 
-print(get_enrolled_courses())
 # Define a list of tools
 tools = [
     get_enrolled_courses
@@ -59,5 +58,5 @@ def process_bruinlearn_agent(input:str) -> str:
     output = agent.invoke(input)
     return output
 
-# print(process_weather_agent('What is the humidity in New York?')) 
+print(process_bruinlearn_agent('What are my current classes?')) 
 
