@@ -79,6 +79,6 @@ class Controller:
         print(f"Controller: invoke: message: {message}, output: {output}")
         self.history.append([message, output])
         for msg,out in self.history:
-            upload_blob_from_memory('terrys-memories',"User: "+msg+'\n\n'+"Terry: "+out+download_blob_into_memory('terrys-memories','transcript.txt').decode('utf-8'), 'transcript.txt')
+            upload_blob_from_memory('terrys-memories',"\n\nUser: "+msg+'\n\n'+"Terry: "+out+download_blob_into_memory('terrys-memories','transcript.txt').decode('utf-8'), 'transcript.txt')
         
         
