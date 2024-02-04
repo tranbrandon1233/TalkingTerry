@@ -22,6 +22,7 @@ from langchain_community.utilities.google_trends import GoogleTrendsAPIWrapper
 from langchain_community.utilities import GoogleSerperAPIWrapper
 
 google_finance = GoogleFinanceQueryRun(api_wrapper=GoogleFinanceAPIWrapper())
+google_finance.description = "Queries the Google Finance API for the stock price of the input company ticker."
 google_jobs = GoogleJobsQueryRun(api_wrapper=GoogleJobsAPIWrapper())
 google_scholar = GoogleScholarQueryRun(api_wrapper=GoogleScholarAPIWrapper())
 
@@ -61,9 +62,6 @@ def process_google_agent(input: str) -> str:
     output = agent.invoke(input)
     return output
 
-print(process_google_agent('What is the current price of Apple stock?'))
+print(process_google_agent('What is the stock price of Apple?'))
 
-print(process_google_agent('What are the current job openings in New York?'))
-
-print(process_google_agent('What is the current research on AI?'))
 
