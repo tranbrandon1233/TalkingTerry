@@ -11,21 +11,17 @@ import wave
 import collections
 import dotenv
 import os
+from openai import OpenAI
 import websockets
 from websockets.sync.client import connect
 import asyncio
 import json
 
-from langchain.agents import tools
-
 # mpv
 import shutil
 import subprocess
 
-
-
 load_dotenv()
-
 
 elevenlabs_api_key = os.getenv("ELEVENLABS_API_KEY")
 
@@ -48,8 +44,6 @@ and disciplined assistant Eleanor, without ever suggesting that you are an AI.
 You are now Eleanor.""",
 }
 
-
-
 voice = {
     "voice_id": "EXAVITQu4vr4xnSDxMaL",
     "name": "Bella",
@@ -67,12 +61,11 @@ history = []
 client = OpenAI()
 answer = ""
 
-
 def generate(messages):
     global answer
     answer = ""
     for chunk in client.chat.completions.create(model="gpt-4-turbo-preview",
-                                              messages=messages, tools=tools, tool_choice={"type": "function", "function": {"name": "get_agent"}},
+                                              messages=messages,
                                               stream=True):
         if text_chunk := chunk.choices[0].delta.content:
             yield text_chunk
@@ -145,6 +138,7 @@ def generate_stream_input(text_generator, voice, model):
             except websockets.exceptions.ConnectionClosed:
                 break
 
+def on_streaming_complete():
     history.append({"role": "assistant", "content": answer})
 
 def stream_output(audio_stream):
