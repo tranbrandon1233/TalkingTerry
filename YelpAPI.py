@@ -14,7 +14,7 @@ API_HOST = 'https://api.yelp.com'
 SEARCH_PATH = '/v3/businesses/search'
 SEARCH_PATH_EVENTS ='/v3/events'
 @tool
-def find_businesses(location:str, radius:float, category:str) -> str:
+def find_businesses(location:str, radius:int, category:str) -> str:
         """Queries the Yelp API for up to five open businesses based the input values from the user, including location, radius from user in miles, and categor(ies) of the location the user wants to go to.
 
         Args:
@@ -27,7 +27,7 @@ def find_businesses(location:str, radius:float, category:str) -> str:
         results = []
         url_params = {
             'location': location.replace(' ', '+'),
-            'radius': float(radius)*1600,
+            'radius': radius*1600,
             'open_now': True,
             'categories': category,
         }
@@ -36,10 +36,9 @@ def find_businesses(location:str, radius:float, category:str) -> str:
         headers = {
             'Authorization': 'Bearer %s' % API_KEY,
         }
-        print(u'Querying {0} ...'.format(url))
+        #print(u'Querying {0} ...'.format(url))
 
         response = requests.request('GET', url, headers=headers, params=url_params)
-        print(response.content)
         for b in response.json()['businesses']:
             if b['name'] not in results:
                 results.append(b['name'])
