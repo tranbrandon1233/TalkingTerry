@@ -27,7 +27,6 @@ def get_places(location:str, radius:int, category:str) -> str:
         
     Returns: A string of up to five businesses that are open in the location within the specified raidus in miles that the user wants to go to.
     """
-    results = []
     url_params = {
         'location': location.replace(' ', '+'),
         'radius': radius*1600,
@@ -57,6 +56,7 @@ def find_businesses(location:str, radius:int, category:str) -> str:
         
     Returns: A string of up to five businesses that are open in the location within the specified raidus in miles that the user wants to go to.
     """
+    results = []
     places =get_places(location, radius, category)
     for b in places['businesses']:
         if b['name'] not in results:
@@ -170,4 +170,4 @@ def process_yelp_agent(input:str) -> str:
     return output
 
 
-print(process_yelp_agent('What is an open event within a 5 mile radius of Los Angeles?')) 
+#print(process_yelp_agent('What is an open event within a 5 mile radius of Los Angeles?')) 
