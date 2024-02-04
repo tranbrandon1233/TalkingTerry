@@ -2,6 +2,7 @@ from __future__ import print_function
 import os
 from dotenv import load_dotenv
 import requests
+from Agent import Agent
 
 from langchain.tools import tool
 
