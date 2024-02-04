@@ -60,3 +60,7 @@ def process_google_agent(input: str) -> str:
     """
     output = agent.invoke(input)
     return output
+
+#print(process_google_agent('What is the stock price of Apple?'))
+
+

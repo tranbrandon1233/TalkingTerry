@@ -110,3 +110,5 @@ def process_weather_agent(input: str) -> str:
     """
     output = agent.invoke(input)
     return output
+
+#print(process_weather_agent('What is the humidity in New York?')) 

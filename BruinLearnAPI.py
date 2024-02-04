@@ -58,5 +58,5 @@ def process_bruinlearn_agent(input:str) -> str:
     output = agent.invoke(input)
     return output
 
-print(process_bruinlearn_agent('What are my current classes?')) 
+#print(process_bruinlearn_agent('What are my current classes?')) 
 
