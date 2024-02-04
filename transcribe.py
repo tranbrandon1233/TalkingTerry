@@ -26,10 +26,8 @@ load_dotenv()
 elevenlabs_api_key = os.getenv("ELEVENLABS_API_KEY")
 
 system_prompt = {
-    "role":
-    "system",
-    "content":
-    """You are Eleanor, a mature, intelligent woman with years 
+    "role": "system",
+    "content": """You are Eleanor, a mature, intelligent woman with years 
 of experience in academia and personal development. 
 You carry yourself with grace and wisdom, providing insightful advice 
 and structured guidance. In this context, you are not an AI. 
@@ -56,19 +54,8 @@ voice = {
     },
 }
 
-history = []
+from Controller import Controller
 
-client = OpenAI()
-answer = ""
-
-def generate(messages):
-    global answer
-    answer = ""
-    for chunk in client.chat.completions.create(model="gpt-4-turbo-preview",
-                                              messages=messages,
-                                              stream=True):
-        if text_chunk := chunk.choices[0].delta.content:
-            yield text_chunk
 
 def is_installed(lib_name):
     lib = shutil.which(lib_name)
@@ -76,19 +63,19 @@ def is_installed(lib_name):
         return False
     return True
 
+
 def get_levels(data, long_term_noise_level, current_noise_level):
     pegel = np.abs(np.frombuffer(data, dtype=np.int16)).mean()
-    long_term_noise_level = long_term_noise_level * 0.995 + pegel * (1.0 -
-                                                                     0.995)
+    long_term_noise_level = long_term_noise_level * 0.995 + pegel * (1.0 - 0.995)
     current_noise_level = current_noise_level * 0.920 + pegel * (1.0 - 0.920)
     return pegel, long_term_noise_level, current_noise_level
 
-def text_chunker(chunks):
+
+async def text_chunker(chunks):
     """Used during input streaming to chunk text blocks and set last char to space"""
-    splitters = (".", ",", "?", "!", ";", ":", "—", "-", "(", ")", "[", "]",
-                 "}", " ")
+    splitters = (".", ",", "?", "!", ";", ":", "—", "-", "(", ")", "[", "]", "}", " ")
     buffer = ""
-    for text in chunks:
+    async for text in chunks:
         if buffer.endswith(splitters):
             yield buffer if buffer.endswith(" ") else buffer + " "
             buffer = text
@@ -101,24 +88,28 @@ def text_chunker(chunks):
     if buffer != "":
         yield buffer + " "
 
-def generate_stream_input(text_generator, voice, model):
+
+async def generate_stream_input(text_generator, voice, model):
     BOS = json.dumps(
-        dict(text=" ",
-             try_trigger_generation=True,
-             voice_settings=voice['settings'],
-             generation_config=dict(chunk_length_schedule=[50])))
+        dict(
+            text=" ",
+            try_trigger_generation=True,
+            voice_settings=voice["settings"],
+            generation_config=dict(chunk_length_schedule=[50]),
+        )
+    )
     EOS = json.dumps({"text": ""})
 
     with connect(
-            f"""wss://api.elevenlabs.io/v1/text-to-speech/{voice["voice_id"]}/stream-input?model_id={model["model_id"]}""",
-            additional_headers={
-                "xi-api-key": elevenlabs_api_key,
-            },
+        f"""wss://api.elevenlabs.io/v1/text-to-speech/{voice["voice_id"]}/stream-input?model_id={model["model_id"]}""",
+        additional_headers={
+            "xi-api-key": elevenlabs_api_key,
+        },
     ) as websocket:
         websocket.send(BOS)
 
         # Stream text chunks and receive audio
-        for text_chunk in text_chunker(text_generator):
+        async for text_chunk in text_chunker(text_generator):
             data = dict(text=text_chunk, try_trigger_generation=True)
             websocket.send(json.dumps(data))
             try:
@@ -138,15 +129,14 @@ def generate_stream_input(text_generator, voice, model):
             except websockets.exceptions.ConnectionClosed:
                 break
 
-def on_streaming_complete():
-    history.append({"role": "assistant", "content": answer})
 
-def stream_output(audio_stream):
+async def stream_output(audio_stream):
     if not is_installed("mpv"):
         message = (
             "mpv not found, necessary to stream audio. "
             "On mac you can install it with 'brew install mpv'. "
-            "On linux and windows you can install it from https://mpv.io/")
+            "On linux and windows you can install it from https://mpv.io/"
+        )
         raise ValueError(message)
 
     mpv_command = ["mpv", "--no-cache", "--no-terminal", "--", "fd://0"]
@@ -159,7 +149,7 @@ def stream_output(audio_stream):
 
     audio = b""
 
-    for chunk in audio_stream:
+    async for chunk in audio_stream:
         if chunk is not None:
             mpv_process.stdin.write(chunk)  # type: ignore
             mpv_process.stdin.flush()  # type: ignore
@@ -171,63 +161,82 @@ def stream_output(audio_stream):
 
     return audio
 
-while True:
-    audio = pyaudio.PyAudio()
-    stream = audio.open(
-        rate=16000,
-        format=pyaudio.paInt16,
-        channels=1,
-        input=True,
-        frames_per_buffer=512,
-    )
-    audio_buffer = collections.deque(maxlen=int((16000 // 512) * 0.5))
-    frames, long_term_noise_level, current_noise_level, voice_activity_detected = (
-        [],
-        0.0,
-        0.0,
-        False,
-    )
-    print("\n\nStart speaking. ", end="", flush=True)
-    
-    while True:
-        data = stream.read(512)
-        pegel, long_term_noise_level, current_noise_level = get_levels(
-            data, long_term_noise_level, current_noise_level)
-        audio_buffer.append(data)
-        
-        if (not voice_activity_detected
-                and current_noise_level > long_term_noise_level + 300):
-            voice_activity_detected = True
-            print("Listening.\n")
-            ambient_noise_level = long_term_noise_level
-            frames.extend(list(audio_buffer))
 
-        if voice_activity_detected:
-            frames.append(data)
-            if current_noise_level < ambient_noise_level + 100:
-                break  # voice activity ends
-            
-    stream.stop_stream(), stream.close(), audio.terminate()
-    audio_data = b"".join(frames)
-    
-    with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as temp_audio_file:
-        with wave.open(temp_audio_file.name, 'wb') as wf:
-            wf.setparams((1, audio.get_sample_size(pyaudio.paInt16), 16000, 0, 'NONE', 'NONE'))
-            wf.writeframes(audio_data)
-        with open(temp_audio_file.name, "rb") as audio_file:
-                transcript = client.audio.transcriptions.create(
-                    model="whisper-1",
-                    file=audio_file,
-                    response_format="text"
+async def main():
+    controller = Controller()
+    client = OpenAI()
+    while True:
+        audio = pyaudio.PyAudio()
+        stream = audio.open(
+            rate=16000,
+            format=pyaudio.paInt16,
+            channels=1,
+            input=True,
+            frames_per_buffer=512,
+        )
+        audio_buffer = collections.deque(maxlen=int((16000 // 512) * 0.5))
+        frames, long_term_noise_level, current_noise_level, voice_activity_detected = (
+            [],
+            0.0,
+            0.0,
+            False,
+        )
+        print("\n\nStart speaking. ", end="", flush=True)
+
+        while True:
+            data = stream.read(512)
+            pegel, long_term_noise_level, current_noise_level = get_levels(
+                data, long_term_noise_level, current_noise_level
+            )
+            audio_buffer.append(data)
+
+            if (
+                not voice_activity_detected
+                and current_noise_level > long_term_noise_level + 300
+            ):
+                voice_activity_detected = True
+                print("Listening.\n")
+                ambient_noise_level = long_term_noise_level
+                frames.extend(list(audio_buffer))
+
+            if voice_activity_detected:
+                frames.append(data)
+                if current_noise_level < ambient_noise_level + 100:
+                    break  # voice activity ends
+
+        stream.stop_stream(), stream.close(), audio.terminate()
+        audio_data = b"".join(frames)
+
+        with tempfile.NamedTemporaryFile(
+            suffix=".wav", delete=False
+        ) as temp_audio_file:
+            with wave.open(temp_audio_file.name, "wb") as wf:
+                wf.setparams(
+                    (
+                        1,
+                        audio.get_sample_size(pyaudio.paInt16),
+                        16000,
+                        0,
+                        "NONE",
+                        "NONE",
+                    )
                 )
-    os.remove(temp_audio_file.name)
-    print(f"Transcribed:{transcript}\n<<< ", end="", flush=True)
-    history.append({"role": "user", "content": transcript})
-    
-    model = {
-        "model_id": "eleven_monolingual_v1",
-    }
-    
-    text_generator = generate([system_prompt] + history[-10:])
-    stream_output(generate_stream_input(text_generator, voice, model))
-    on_streaming_complete()
+                wf.writeframes(audio_data)
+            with open(temp_audio_file.name, "rb") as audio_file:
+                transcript = client.audio.transcriptions.create(
+                    model="whisper-1", file=audio_file, response_format="text"
+                )
+        os.remove(temp_audio_file.name)
+        print(f"Transcribed:{transcript}\n<<< ", end="", flush=True)
+
+        model = {
+            "model_id": "eleven_monolingual_v1",
+        }
+
+        text_generator = controller.invoke(transcript)
+        await stream_output(generate_stream_input(text_generator, voice, model))
+
+
+import asyncio
+
+asyncio.run(main())
