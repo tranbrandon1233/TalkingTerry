@@ -1,15 +1,12 @@
 from dotenv import load_dotenv
 import numpy as np
 from openai import OpenAI
-from scipy.io import wavfile
 import tempfile
 import shutil
-import io
 import base64
 import pyaudio
 import wave
 import collections
-import dotenv
 import os
 from openai import OpenAI
 import websockets
