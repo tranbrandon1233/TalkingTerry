@@ -11,6 +11,7 @@ from GoogleSearchAPI import process_google_agent
 from TwilioAPI import process_phone_agent
 from YelpAPI import process_yelp_agent
 from BruinLearnAPI import process_bruinlearn_agent
+from EnvironmentAPI import process_GW_agent
 
 new_prompt = """You are a helpful assistant.
 Respond in the language of the user.
@@ -35,6 +36,7 @@ class Controller:
             process_bruinlearn_agent,
             process_yelp_agent,
             process_phone_agent,
+            process_GW_agent,
         ]
 
         prompt = hub.pull("hwchase17/openai-tools-agent")

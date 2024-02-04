@@ -227,7 +227,6 @@ async def main():
             generate_stream_input(first_text_chunk, text_generator, voice, model)
         )
 
-
 import asyncio
 
 asyncio.run(main())
