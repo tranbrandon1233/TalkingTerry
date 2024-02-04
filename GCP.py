@@ -49,5 +49,3 @@ def download_blob_into_memory(bucket_name, blob_name):
     contents = blob.download_as_string()
 
     return contents
-upload_blob_from_memory('terrys-memories', str(1), 'tracker.txt')
-download_blob_into_memory('terrys-memories', 'tracker.txt')
