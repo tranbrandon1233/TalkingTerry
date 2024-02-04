@@ -42,45 +42,45 @@ def find_weather_condition(city:str) -> str:
         """    
         return get_info(city)['current']['condition']['text']
 @tool
-def find_temp(city:str) -> float:
+def find_temp(city:str) -> str:
         """Queries the Weather API for the current temperature in Fahrenheit based on the input city from the user.
 
         Args:
             city (str): The city of the user.
         
-        Returns: A float of the current temperature in Fahrenheit of the city the user is in.
+        Returns: A string of the current temperature in Fahrenheit of the city the user is in.
         """        
         return get_info(city)['current']['temp_f']
 @tool
-def find_humidity(city:str) -> int:
+def find_humidity(city:str) -> str:
         """Queries the Weather API for the current humidity as a percentage based on the input city from the user.
 
         Args:
             city (str): The city of the user.
         
-        Returns: A integer of the current humidity as a percentage in the city the user is in.
+        Returns: A string of the current humidity as a percentage in the city the user is in.
         """        
         return get_info(city)['current']['humidity']
     
 @tool
-def find_precip(city:str) -> float:
+def find_precip(city:str) -> str:
         """Queries the Weather API for the current precipitation in inches based on the input city from the user.
 
         Args:
             city (str): The city of the user.
         
-        Returns: A float of the precipitation in inches of the city the user is in.
+        Returns: A string of the precipitation in inches of the city the user is in.
         """        
         return get_info(city)['current']['precip_in']
 
 @tool
-def find_wind_speed(city:str) -> float:
+def find_wind_speed(city:str) -> str:
         """Queries the Weather API for the wind speed in miles per hour based on the input city from the user.
 
         Args:
             city (str): The city of the user.
         
-        Returns: A float of the current wind speed in miles per hour of the city the user is in.
+        Returns: A string of the current wind speed in miles per hour of the city the user is in.
         """        
         return get_info(city)['current']['wind_mph']
 
