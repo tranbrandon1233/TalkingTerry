@@ -70,4 +70,4 @@ class Controller:
 import asyncio
 
 #asyncio.run(Controller().invoke("What are my current classes? Send it as a text message to my phone number at 6262786314 using the Twilio API. Do not add a +1 to the phone number."))
-asyncio.run(Controller().invoke("What are my current classes? Send it as a text message to my phone number at 6262786314."))
+#asyncio.run(Controller().invoke("What are my current classes? Send it as a text message to my phone number at 6262786314."))
