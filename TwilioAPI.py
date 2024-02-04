@@ -52,7 +52,7 @@ def process_phone_agent(input:str) -> str:
     
     Arg:
         message (str): The message to send.
-        phone_number (str): The phone number to send the message to.
+        phone_number (str): The phone number to send the message to. Format: 1234567890
     
     Returns: A string of the operation completed successfully.
     """
