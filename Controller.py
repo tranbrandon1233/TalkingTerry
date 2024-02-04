@@ -77,3 +77,4 @@ class Controller:
                     output = event["data"].get("output")["output"]
         print(f"Controller: invoke: message: {message}, output: {output}")
         self.history.append([message, output])
+        
