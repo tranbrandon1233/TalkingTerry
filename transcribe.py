@@ -47,28 +47,7 @@ From now on, act consistently in your role as the sagacious, nurturing,
 and disciplined assistant Eleanor, without ever suggesting that you are an AI.
 You are now Eleanor.""",
 }
-'''
-tools = [
-    {
-        "type": "function",
-        "function": {
-            "name": "get_agent",
-            "description": "Call this function with the parameter 'weather' if the user asks for the weather, with the parameter 'yelp' if the user asks about a nearby business, or with the parameter 'BruinLearn' if the user asks about classes.",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "type": {
-                        "type": "string",
-                        "enum": ["weather", "yelp", "BruinLearn"],
-                        "description": "The agent needed to handle a specific task. For example, 'weather' for any information about the weather, 'yelp' for any information about a nearby business, or 'BruinLearn' for any information about classes.",
-                    },
-                },
-                "required": ["type"],
-            },
-        }
-    },
-]
-'''
+
 
 
 voice = {

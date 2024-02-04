@@ -15,7 +15,7 @@ API_HOST = 'https://bruinlearn.ucla.edu/api'
 SEARCH_PATH = '/v1/courses'
 
 @tool
-def get_enrolled_courses() -> list:
+def get_enrolled_courses() -> str:
     """
     Queries the Canvas API for enrollment of classes for the student based from bruin learn.
 
@@ -37,22 +37,19 @@ def get_enrolled_courses() -> list:
     for course in response.json():
         listCourses.append(course['name'])
 
-    return listCourses
+    return str(listCourses)[1:-1]
 
-
+print(get_enrolled_courses())
 # Define a list of tools
 tools = [
     get_enrolled_courses
 ]
 
 @tool
-def process_bruinlearn_agent(input: str) -> str:
-    """Asks the weather agent to process the input and return the output. The agent is able to find the current weather condition, temperature, humidity, precipitation, and wind speed of the city the user is in.
+def process_bruinlearn_agent(input:str) -> str:
+    """Asks the BruinLearn agent to find the current classes the user is enrolled in.
     
-    Arg:
-        input (str): The city of the user.
-    
-    Returns: A string of the current weather condition, temperature, humidity, precipitation, and wind speed of the city the user is in.
+    Returns: A string of the current current classes the user is enrolled in.
     """
     # Define a list of tools
     tools = [
