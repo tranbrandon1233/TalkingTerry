@@ -12,6 +12,7 @@ load_dotenv()
 API_KEY = os.getenv('YELP_API_KEY')
 API_HOST = 'https://api.yelp.com'
 SEARCH_PATH = '/v3/businesses/search'
+SEARCH_PATH_EVENTS = 'v3/events'
     
 @tool
 def find_businesses(location:str, radius: float, categories:list) -> list:
@@ -44,3 +45,24 @@ def find_businesses(location:str, radius: float, categories:list) -> list:
             results.append(b['name'])
         return results
 
+def find_events(location:str, radius: float, categories:list) -> list:
+
+        results = []
+        url_params = {
+            'location': location.replace(' ', '+'),
+            'radius': radius*1600,
+            'open_now': True,
+            'categories': categories,
+        }
+        url_params = url_params or {}
+        url = '{0}{1}'.format(API_HOST, quote(SEARCH_PATH.encode('utf8')))
+        headers = {
+            'Authorization': 'Bearer %s' % API_KEY,
+        }
+        print(u'Querying {0} ...'.format(url))
+
+        response = requests.request('GET', url, headers=headers, params=url_params)
+
+        for b in response.json()['businesses']:
+            results.append(b['name'])
+        return results
