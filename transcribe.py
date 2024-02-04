@@ -21,6 +21,7 @@ import json
 import shutil
 import subprocess
 
+from GCP import upload_blob_from_memory, download_blob_into_memory
 load_dotenv()
 
 elevenlabs_api_key = os.getenv("ELEVENLABS_API_KEY")
@@ -215,7 +216,7 @@ async def main():
                 )
         os.remove(temp_audio_file.name)
         print(f"Transcribed:{transcript}\n<<< ", end="", flush=True)
-
+        upload_blob_from_memory('terrys-memories',transcript+'\n\n'+download_blob_into_memory('terrys-memories','transcript.txt').decode('utf-8'), 'transcript.txt')
         model = {
             "model_id": "eleven_multilingual_v2",
         }
@@ -226,6 +227,7 @@ async def main():
         await stream_output(
             generate_stream_input(first_text_chunk, text_generator, voice, model)
         )
+
 
 import asyncio
 

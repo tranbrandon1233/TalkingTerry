@@ -12,6 +12,7 @@ from TwilioAPI import process_phone_agent
 from YelpAPI import process_yelp_agent
 from BruinLearnAPI import process_bruinlearn_agent
 from EnvironmentAPI import process_GW_agent
+from GCP import upload_blob_from_memory, download_blob_into_memory
 
 new_prompt = """You are a helpful assistant.
 Respond in the language of the user.
@@ -77,4 +78,7 @@ class Controller:
                     output = event["data"].get("output")["output"]
         print(f"Controller: invoke: message: {message}, output: {output}")
         self.history.append([message, output])
+        for msg,out in self.history:
+            upload_blob_from_memory('terrys-memories',"User: "+msg+'\n\n'+"Terry: "+out+download_blob_into_memory('terrys-memories','transcript.txt').decode('utf-8'), 'transcript.txt')
+        
         
