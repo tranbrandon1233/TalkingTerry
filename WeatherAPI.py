@@ -3,6 +3,7 @@ import os
 import requests
 from langchain.tools import tool
 from urllib.parse import quote
+from Agent import Agent
 
 load_dotenv()
 WEATHER_API_KEY = os.getenv('WEATHER_API_KEY')
@@ -82,12 +83,35 @@ def find_wind_speed(city:str) -> float:
         Returns: A float of the current wind speed in miles per hour of the city the user is in.
         """        
         return get_info(city)['current']['wind_mph']
-    
-'''
-print(find_weather_condition("New York"))
-print(find_temp("New York"))
-print(find_humidity("New York"))
-print(find_precip("New York"))
-print(find_wind_speed("New York"))
 
-'''
+# Define a list of tools
+tools = [
+    find_weather_condition,
+    find_temp,
+    find_humidity,
+    find_precip,
+    find_wind_speed
+]
+
+@tool
+def process_weather_agent(input: str) -> str:
+    """Asks the weather agent to process the input and return the output. The agent is able to find the current weather condition, temperature, humidity, precipitation, and wind speed of the city the user is in.
+    
+    Arg:
+        input (str): The city of the user.
+    
+    Returns: A string of the current weather condition, temperature, humidity, precipitation, and wind speed of the city the user is in.
+    """
+    # Define a list of tools
+    tools = [
+        find_weather_condition,
+        find_temp,
+        find_humidity,
+        find_precip,
+        find_wind_speed
+    ]
+    agent = Agent(tools)
+    output = agent.invoke(input)
+    return output
+
+# print(process_weather_agent('What is the humidity in New York?')) 
