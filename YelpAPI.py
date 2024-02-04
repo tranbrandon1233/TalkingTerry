@@ -42,5 +42,5 @@ def find_businesses(location:str, radius: float, categories:list) -> list:
 
         for b in response.json()['businesses']:
             results.append(b['name'])
-        return results[:5]
+        return results[:4]
 
