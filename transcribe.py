@@ -25,7 +25,7 @@ from GCP import upload_blob_from_memory, download_blob_into_memory
 load_dotenv()
 
 elevenlabs_api_key = os.getenv("ELEVENLABS_API_KEY")
-
+GCP_BUCKET = os.getenv("GCP_BUCKET")
 voice = {
     "voice_id": "EXAVITQu4vr4xnSDxMaL",
     "name": "Bella",
@@ -216,7 +216,7 @@ async def main():
                 )
         os.remove(temp_audio_file.name)
         print(f"Transcribed:{transcript}\n<<< ", end="", flush=True)
-        upload_blob_from_memory('terrys-memories',transcript+'\n\n'+download_blob_into_memory('terrys-memories','transcript.txt').decode('utf-8'), 'transcript.txt')
+        upload_blob_from_memory(GCP_BUCKET,transcript+'\n\n'+download_blob_into_memory(GCP_BUCKET,'transcript.txt').decode('utf-8'), 'transcript.txt')
         model = {
             "model_id": "eleven_multilingual_v2",
         }

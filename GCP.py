@@ -4,6 +4,7 @@ from google.cloud import storage
 load_dotenv()
 GCP_ACCESS_TOKEN = os.getenv("GCP_ACCESS_TOKEN")
 GCP_REFRESH_TOKEN = os.getenv("GCP_REFRESH_TOKEN")
+GCP_REFRESH_TOKEN = os.getenv("GCP_REFRESH_TOKEN")
 API_HOST_UPLOAD = 'https://storage.googleapis.com/upload/storage/v1/b/{0}/o'.format("terrys-memories")
 API_HOST_DOWNLOAD = 'https://storage.googleapis.com/upload/storage/v1/b/{0}/o'.format("terrys-memories")
 

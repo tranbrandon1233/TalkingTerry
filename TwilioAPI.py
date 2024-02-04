@@ -48,7 +48,7 @@ tools = [
 
 @tool
 def process_phone_agent(input:str) -> str:
-    """Asks the phone agent to process the input and return the output. The agent is able to a call or a text containing the message parameter and send it to the phone number specified by the phone_number parameter.
+    """Asks the phone agent to process the input and return the output. The agent is able to a call or send a text containing the message parameter and send it to the phone number specified by the phone_number parameter.
     
     Arg:
         message (str): The message to send.

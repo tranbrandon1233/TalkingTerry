@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 import pprint
 
 load_dotenv()
-
+import os
 from WeatherAPI import process_weather_agent
 from GoogleSearchAPI import process_google_agent
 from TwilioAPI import process_phone_agent
@@ -26,7 +26,7 @@ Your output will be transcribed to speech and played to the user. So, when respo
 
 Remember, your goal is to provide responses that are clear, concise, and easily understood when spoken aloud.
 """
-
+GCP_BUCKET = os.getenv('GCP_BUCKET')
 
 class Controller:
     def __init__(self):
@@ -47,7 +47,7 @@ class Controller:
             model.with_config({"tags": ["agent_llm"]}), tools, prompt
         )
         self.executor = AgentExecutor(agent=agent, tools=tools).with_config(
-            {"run_name": "Agent"}
+            {"run_name": "Terry"}
         )
         self.history = []
 
@@ -62,7 +62,7 @@ class Controller:
             if index % 2 == 0:
                 full_message += f"User: {i}\n"
             else:
-                full_message += f"Agent: {i}\n"
+                full_message += f"Terry: {i}\n"
         full_message += f"User: {message}\n"
         async for event in self.executor.astream_events(
             {"input": full_message, "history": self.history},
@@ -74,11 +74,11 @@ class Controller:
                 if content:
                     yield content
             elif kind == "on_chain_end":
-                if event["name"] == "Agent":
+                if event["name"] == "Terry":
                     output = event["data"].get("output")["output"]
         print(f"Controller: invoke: message: {message}, output: {output}")
         self.history.append([message, output])
         for msg,out in self.history:
-            upload_blob_from_memory('terrys-memories',"\n\nUser: "+msg+'\n\n'+"Terry: "+out+download_blob_into_memory('terrys-memories','transcript.txt').decode('utf-8'), 'transcript.txt')
+            upload_blob_from_memory(GCP_BUCKET,"\n\nUser: "+msg+'\n\n'+"Terry: "+out+download_blob_into_memory(GCP_BUCKET,'transcript.txt').decode('utf-8'), 'transcript.txt')
         
         
