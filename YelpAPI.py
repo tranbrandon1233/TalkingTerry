@@ -5,6 +5,7 @@ import requests
 from langchain.tools import tool
 
 from urllib.parse import quote
+from Agent import Agent
 
 load_dotenv()
 
