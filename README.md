@@ -33,7 +33,7 @@ features include:
 - cabbage is spicy?
 - it's actually kinda hard to fall asleep on a leather couch
 
-## What's next for Xplore
+## What's next for Talking Terry
 - rideshares, food deliveries, (anything listed in the doc we don't end up implementing)
 - wearable enclosure
 
