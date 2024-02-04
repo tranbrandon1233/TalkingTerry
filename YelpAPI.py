@@ -1,11 +1,11 @@
 import os
-import BaseAgent
 from dotenv import load_dotenv
 import requests
 
 from langchain.tools import tool
 
 from urllib.parse import quote
+from Agent import Agent
 
 load_dotenv()
 
@@ -16,14 +16,14 @@ SEARCH_PATH_EVENTS = 'v3/events'
     
 @tool
 def find_businesses(location:str, radius: float, categories:list) -> list:
-        """Queries the API for open businesses based the input values from the user, including location, radius from user in miles, and categor(ies) of the location the user wants to go to.
+        """Queries the Yelp API for up to five open businesses based the input values from the user, including location, radius from user in miles, and categor(ies) of the location the user wants to go to.
 
         Args:
             location (str): The location of the user.
             radius (float): The radius of the business from the user in miles.
             categories (list): The type of business the user wants to go to.
         
-        Returns: A list of businesses that are open in the location within the raidus in miles that the user wants to go to.
+        Returns: A list of up to five businesses that are open in the location within the raidus in miles that the user wants to go to.
         """
         results = []
         url_params = {
@@ -43,7 +43,7 @@ def find_businesses(location:str, radius: float, categories:list) -> list:
 
         for b in response.json()['businesses']:
             results.append(b['name'])
-        return results
+        return results[:5]
 
 def find_events(location:str, radius: float, categories:list) -> list:
 
