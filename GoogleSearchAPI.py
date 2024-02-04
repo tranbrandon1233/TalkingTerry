@@ -2,6 +2,7 @@ import os
 
 from Agent import Agent
 from dotenv import load_dotenv
+
 load_dotenv()
 
 from langchain.agents import Tool
@@ -22,7 +23,9 @@ from langchain_community.utilities.google_trends import GoogleTrendsAPIWrapper
 from langchain_community.utilities import GoogleSerperAPIWrapper
 
 google_finance = GoogleFinanceQueryRun(api_wrapper=GoogleFinanceAPIWrapper())
-google_finance.description = "Queries the Google Finance API for the stock price of the input company ticker."
+google_finance.description = (
+    "Queries the Google Finance API for the stock price of the input company ticker."
+)
 google_jobs = GoogleJobsQueryRun(api_wrapper=GoogleJobsAPIWrapper())
 google_scholar = GoogleScholarQueryRun(api_wrapper=GoogleScholarAPIWrapper())
 
@@ -35,30 +38,26 @@ google_search = Tool(
 
 google_trends = GoogleTrendsQueryRun(api_wrapper=GoogleTrendsAPIWrapper())
 
+# Define a list of tools
+tools = [google_finance, google_jobs, google_scholar, google_search, google_trends]
+agent = Agent(tools)
+
+
 @tool
 def process_google_agent(input: str) -> str:
-    """Asks the google agent to process the input and return the output. 
+    """Asks the google agent to process the input and return the output.
     The agent is able to answer questions about:
     - Finance
     - Jobs
     - Scholar (Academic Response)
     - Search
     - Trends
-    
+
     Arg:
         input (str): The query of the user.
-        
-    Returns: A string of the response of the query.   
+
+    Returns: A string of the response of the query.
     """
-    # Define a list of tools
-    tools = [
-        google_finance,
-        google_jobs,
-        google_scholar,
-        google_search,
-        google_trends
-    ]
-    agent = Agent(tools)
     output = agent.invoke(input)
     return output
 
