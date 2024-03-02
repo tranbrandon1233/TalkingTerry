@@ -17,9 +17,9 @@ def text_user(message:str,phone_number:str)->str:
     client = Client(os.getenv('TWILIO_SID'), os.getenv('TWILIO_AUTH_TOKEN'))
 
     client.messages.create(
-        from_='+18883267630',
+        from_='',
         body=message,
-        to="+16262786314"
+        to=""
     )
     return "Operation completed successfully."
 
